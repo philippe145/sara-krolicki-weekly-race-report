@@ -1,0 +1,411 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"></head><body><title>Sara · Race Analysis</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one athlete file. Gate red = Sara, slate = the field, gold = targets (top 10 / podium) */
+:root{
+  --snow:#f6f8fa; --panel:#ffffff; --ink:#15202b; --muted:#5b6b7a; --line:#d9e1e8; --soft:#edf2f6;
+  --red:#c8202f; --redsoft:#fbe6e8; --field:#b6c2cd; --gold:#a8780a; --goldsoft:#fbf1d6;
+  --good:#1d7a4a; --bad:#b3261e;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --snow:#0f151b; --panel:#162029; --ink:#e7eef4; --muted:#93a4b3; --line:#2a3946; --soft:#1c2832;
+  --red:#ef5a66; --redsoft:#3a1d22; --field:#4a5a68; --gold:#e3b84a; --goldsoft:#332a10; --good:#4cc185; --bad:#ff7b72; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --snow:#0f151b; --panel:#162029; --ink:#e7eef4; --muted:#93a4b3; --line:#2a3946; --soft:#1c2832;
+  --red:#ef5a66; --redsoft:#3a1d22; --field:#4a5a68; --gold:#e3b84a; --goldsoft:#332a10; --good:#4cc185; --bad:#ff7b72; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--snow);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;margin:0}
+.wrap{max-width:1120px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between;border-bottom:3px solid var(--red);padding-bottom:12px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(32px,6vw,52px);line-height:.95;margin:0;text-transform:uppercase;letter-spacing:.01em}
+h1 .gate{display:inline-block;width:.28em;height:.78em;background:var(--red);margin-right:.22em;vertical-align:-.03em}
+h2{font-family:var(--display);font-weight:600;font-size:25px;margin:0;text-transform:uppercase;letter-spacing:.02em;text-wrap:balance}
+h3{font-family:var(--display);font-weight:600;font-size:18px;margin:0;text-transform:uppercase;letter-spacing:.03em}
+.sub{color:var(--muted);font-size:13px}
+.label{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+td.n,th.n{font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:13px;text-align:right}
+nav.tabs{display:flex;gap:4px;flex-wrap:wrap;margin:16px 0 20px}
+nav.tabs a{font-family:var(--display);font-size:18px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);text-decoration:none;padding:6px 14px;border-radius:4px;border:1px solid transparent}
+nav.tabs a[aria-current="page"]{color:var(--ink);background:var(--panel);border-color:var(--line);box-shadow:inset 0 -3px 0 var(--red)}
+a{color:var(--red)}
+a:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+select,button{font:inherit;font-size:14px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:6px 10px}
+button{cursor:pointer;font-weight:600}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.seg button{border:0;border-radius:0;background:var(--panel);color:var(--muted);padding:6px 12px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--snow)}
+.controls{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-bottom:14px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr));gap:20px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px;min-width:0}
+.card.red{border-top:5px solid var(--red)}.card.gold{border-top:5px solid var(--gold)}
+.mt{margin-top:20px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:14px 0}
+.stat .v{font-family:var(--display);font-size:32px;font-weight:600;line-height:1.05;font-variant-numeric:tabular-nums}
+.stat .k{font-size:12px;color:var(--muted)}
+.tbl{overflow-x:auto;margin-top:10px}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;border-bottom:1px solid var(--line);padding:6px 8px;white-space:nowrap}
+td{border-bottom:1px solid var(--soft);padding:6px 8px;white-space:nowrap}
+tr.me td{background:var(--redsoft);font-weight:700}
+tr.tm td{color:var(--red)}
+.pill{display:inline-block;font-size:11px;font-weight:600;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.pill.up{color:var(--good);border-color:currentColor}.pill.down{color:var(--bad);border-color:currentColor}
+ul.obs{margin:10px 0 0;padding-left:18px}ul.obs li{margin:5px 0;max-width:72ch}
+.empty{padding:40px 18px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:6px;background:var(--panel)}
+svg text{fill:var(--muted);font-family:var(--body);font-size:11px}
+svg .gridl{stroke:var(--soft)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:6px}
+.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.note{font-size:13px;color:var(--muted);max-width:78ch}
+p{max-width:78ch}
+.status{font-size:12px;color:var(--muted)}
+.racecard{border-top:1px solid var(--line);padding-top:16px;margin-top:16px}
+.racecard:first-of-type{border-top:0;margin-top:0;padding-top:0}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:10px 0}
+.kv div{background:var(--soft);border-radius:4px;padding:8px 10px}
+.kv b{display:block;font-family:var(--mono);font-size:15px;font-variant-numeric:tabular-nums}
+.kv span{font-size:11.5px;color:var(--muted)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="label" id="kicker">NYSSRA · slalom &amp; giant slalom · athlete file</div>
+      <h1><span class="gate"></span><span id="aname">Sara</span></h1>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <label class="label" for="season">Season</label><select id="season"></select>
+      <span class="status" id="status">Loading race data…</span>
+    </div>
+  </header>
+  <nav class="tabs" aria-label="Views">
+    <a href="#season">Season</a>
+    <a href="#races">Race by race</a>
+    <a href="#rivals">Rivals</a>
+    <a href="#hills">Hill types</a>
+    <a href="#ranking">Venue ranking</a>
+    <a href="#u18" id="outlookTab">Outlook</a>
+    <a href="#method">Method</a>
+  </nav>
+  <main id="view"><div class="empty">Loading races…</div></main>
+</div>
+
+<script>
+(function(){
+const S={races:[],config:null,season:null,disc:'all',loaded:false};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmtT=t=>{if(t==null)return '';const m=Math.floor(t/60),s=t-m*60;return m?`${m}:${s.toFixed(2).padStart(5,'0')}`:s.toFixed(2)};
+const pct=v=>v==null?'–':(v>0?'+':'')+v.toFixed(1)+'%';
+const sec=v=>v==null?'–':(v>0?'+':'')+v.toFixed(2)+' s';
+const dd0=d=>{const [y,m,da]=d.split('-');return new Date(+y,+m-1,+da).toLocaleDateString('en-US',{month:'short',day:'numeric'})};
+const DY=d=>dd0(d)+' '+d.slice(0,4);
+const dd=d=>S.season==='all'?DY(d):dd0(d);
+const PL=(n,w)=>n+' '+w+(n===1?'':(w.endsWith('h')?'es':'s'));
+const avg=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:null;
+const median=a=>{if(!a.length)return null;const s=[...a].sort((p,q)=>p-q),m=Math.floor(s.length/2);return s.length%2?s[m]:(s[m-1]+s[m])/2};
+const ord=n=>{const s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0])};
+const ME=()=>(S.config&&S.config.athlete&&S.config.athlete.key)||'krolicki sara';
+const CLUB=()=>(S.config&&S.config.athlete&&S.config.athlete.club)||'WMCR';
+const FN=()=>((S.config&&S.config.athlete&&S.config.athlete.name)||'').split(' ')[0]||'Athlete';
+const MALE=()=>!!(S.config&&S.config.athlete&&S.config.athlete.gender==='M');
+const HER=()=>MALE()?'his':'her';
+const SHE=c=>MALE()?(c?'He':'he'):(c?'She':'she');
+const PRED=()=>!((S.config&&S.config.hide_tabs)||[]).includes('ranking');
+const HIDE=()=>(S.config&&S.config.hide_tabs)||[];
+const OC=()=>(S.config&&S.config.athlete&&S.config.athlete.outlook_class)||null;
+const clubName=c=>(S.config&&S.config.club_names&&S.config.club_names[c])||c;
+const discName=d=>d==='SL'?'slalom':'giant slalom';
+
+function rankMap(arr){const o=[...arr].sort((a,b)=>a.v-b.v);const m=new Map();let pv=null,pr=0;o.forEach((x,i)=>{if(x.v!==pv){pr=i+1;pv=x.v}m.set(x.i,pr)});return m}
+function computeRace(doc){
+  const runs=doc.runs;const rs=doc.rows.map((a,i)=>{const r={};doc.cols.forEach((c,j)=>r[c]=a[j]);r.i=i;return r});
+  rs.forEach(r=>{
+    if(runs===1){r.r2=null;r.s2=null}
+    r.total=runs===2?(r.r1!=null&&r.r2!=null?+(r.r1+r.r2).toFixed(2):null):r.r1;
+    r.started=!(r.r1==null&&r.s1==='DNS'&&r.r2==null);
+    if(r.total!=null)r.status='Ranked';else if(r.r1==null&&(r.s1==='DNS'||!r.s1)&&r.r2==null)r.status='DNS';else if(r.r1==null)r.status=(r.s1||'DNF')+' run 1';else r.status=(r.s2||'DNF')+' run 2';
+    if(r.st){r.status=r.st;if(r.st!=='Ranked')r.total=null}
+    r.finished=r.total!=null;
+  });
+  const fin=rs.filter(r=>r.finished);
+  [1,2].forEach(k=>{if(doc.total_only||(k===2&&runs===1))return;const v=rs.filter(r=>r['r'+k]!=null).map(r=>({i:r.i,v:r['r'+k]}));if(!v.length)return;const best=Math.min(...v.map(x=>x.v));const m=rankMap(v);
+    rs.forEach(r=>{const t=r['r'+k];if(t!=null){r['r'+k+'_rank']=m.get(r.i);r['r'+k+'_gap']=(t/best-1)*100;r['r'+k+'_best']=best}})});
+  let srt=[];
+  if(fin.length){const best=Math.min(...fin.map(r=>r.total));const m=rankMap(fin.map(r=>({i:r.i,v:r.total})));srt=[...fin].sort((a,b)=>a.total-b.total);
+    srt.forEach(r=>{r.rank=m.get(r.i);r.gap=(r.total/best-1)*100;r.gap_s=r.total-best;r.speed=best/r.total*100});
+    if(runs===2&&!doc.total_only){const m1=rankMap(fin.map(r=>({i:r.i,v:r.r1})));fin.forEach(r=>r.gained=m1.get(r.i)-r.rank)}
+    const byc={};fin.forEach(r=>(byc[r.cls]=byc[r.cls]||[]).push(r));
+    Object.values(byc).forEach(a=>{const m2=rankMap(a.map(r=>({i:r.i,v:r.total})));a.forEach(r=>{r.class_rank=m2.get(r.i);r.class_n=a.length})});
+  }
+  return Object.assign({},doc,{R:rs,fin:srt,starters:rs.filter(r=>r.started).length,finishers:fin.length,winner:srt[0]||null});
+}
+const seasonRaces=()=>S.races.filter(r=>S.season==='all'||r.season===S.season).sort((a,b)=>a.date.localeCompare(b.date)||a.id.localeCompare(b.id));
+function myRaces(){return seasonRaces().map(rc=>({rc,r:rc.R.find(x=>x.key===ME())})).filter(x=>x.r&&x.r.started)}
+function enrich(x){
+  const {rc,r}=x;const o={...x};
+  if(r.finished){
+    const t10=rc.fin[9],t3=rc.fin[2];
+    o.to10=t10&&r.rank>10?r.total-t10.total:null;o.to10p=o.to10!=null?(r.total/t10.total-1)*100:null;
+    o.toPod=t3&&r.rank>3?r.total-t3.total:null;o.toPodp=o.toPod!=null?(r.total/t3.total-1)*100:null;
+    const tm=rc.fin.filter(y=>y.club===r.club);o.tmRank=tm.findIndex(y=>y.key===ME())+1;o.tmN=tm.length;
+    const cls=rc.fin.filter(y=>y.cls===r.cls);o.clsBest=cls[0];o.clsGap=cls[0]&&cls[0].key!==ME()?(r.total/cls[0].total-1)*100:0;
+  }
+  o.teammates=rc.R.filter(y=>y.club===r.club&&y.started).length;
+  return o;
+}
+
+/* ---------- views ---------- */
+function vSeason(){
+  const all=myRaces().map(enrich);if(!all.length)return empty(`No ${S.season} races for ${FN()} yet.`);
+  const fin=all.filter(x=>x.r.finished);
+  const by=d=>fin.filter(x=>x.rc.disc===d);
+  const two=all.filter(x=>x.r.r1_gap!=null&&x.r.r2_gap!=null);
+  const r2b=two.filter(x=>x.r.r2_gap<x.r.r1_gap).length;
+  const best=fin.length?fin.reduce((b,x)=>x.r.gap<b.r.gap?x:b):null;
+  const bestPl=fin.length?fin.reduce((b,x)=>x.r.rank<b.r.rank?x:b):null;
+  const obs=[];
+  ['GS','SL'].forEach(d=>{const f=by(d);if(f.length>=2){const a=f[0],b=f[f.length-1];obs.push(`<b>${d}</b>: ${pct(a.r.gap)} behind the winner on ${dd(a.rc.date)} (${esc(a.rc.venue)}), ${pct(b.r.gap)} on ${dd(b.rc.date)} (${esc(b.rc.venue)}); ${f.length} finished ${discName(d)} races, median ${pct(median(f.map(x=>x.r.gap)))}.`)}else if(f.length===1)obs.push(`<b>${d}</b>: one finished race, ${pct(f[0].r.gap)} behind the winner at ${esc(f[0].rc.venue)}.`)});
+  if(two.length>=2)obs.push(`Run 2 was closer to the fastest run than run 1 in <b>${r2b} of ${two.length}</b> two-run races (average gap ${pct(avg(two.map(x=>x.r.r1_gap)))} in run 1, ${pct(avg(two.map(x=>x.r.r2_gap)))} in run 2). Conditions are documented for few of these races, so this is a pattern, not a cause.`);
+  const cr=fin.filter(x=>x.r.class_rank);if(cr.length)obs.push(`Among ${esc(cr[0].r.cls)}s, a median finish in the top <b>${Math.round(100*median(cr.map(x=>x.r.class_rank/x.r.class_n)))}%</b> of finishers (best: ${ord(Math.min(...cr.map(x=>x.r.class_rank)))} of ${cr.find(x=>x.r.class_rank===Math.min(...cr.map(y=>y.r.class_rank))).r.class_n}).`);
+  const t10=fin.filter(x=>x.to10!=null);if(t10.length)obs.push(`Distance to the top 10: median <b>${pct(median(t10.map(x=>x.to10p)))}</b> (${median(t10.map(x=>x.to10)).toFixed(2)} s). Closest: ${t10.reduce((b,x)=>x.to10<b.to10?x:b).to10.toFixed(2)} s at ${esc(t10.reduce((b,x)=>x.to10<b.to10?x:b).rc.venue)}.`);
+  const tm=fin.filter(x=>x.tmN>1);if(tm.length)obs.push(`Within ${HER()} club: first club finisher in ${tm.filter(x=>x.tmRank===1).length} of ${tm.length} races where at least two club racers finished.`);
+  const dnf=all.filter(x=>!x.r.finished);if(dnf.length)obs.push(`Did not finish ${dnf.length} of ${all.length}: ${dnf.map(x=>`${esc(x.rc.venue)} ${x.rc.disc} (${esc(x.r.status)})`).join(', ')}.`);
+  return `<div class="stats">
+    <div class="stat"><div class="v">${all.length}</div><div class="k">SL/GS starts, ${S.season==='all'?'all seasons':esc(S.season)}</div></div>
+    <div class="stat"><div class="v">${fin.length}/${all.length}</div><div class="k">finished</div></div>
+    <div class="stat"><div class="v">${fin.length?pct(median(fin.map(x=>x.r.gap))):'–'}</div><div class="k">median behind the winner</div></div>
+    <div class="stat"><div class="v">${bestPl?ord(bestPl.r.rank):'–'}</div><div class="k">best place${bestPl?' · '+esc(bestPl.rc.venue)+' '+bestPl.rc.disc+' (of '+bestPl.rc.finishers+')':''}</div></div>
+    <div class="stat"><div class="v">${best?pct(best.r.gap):'–'}</div><div class="k">closest to the winner${best?' · '+esc(best.rc.venue)+' '+best.rc.disc:''}</div></div>
+  </div>
+  <div class="grid2">
+    <section class="card red"><h2>% behind the winner</h2>${trend(fin)}</section>
+    <section class="card"><h2>What the season shows</h2><ul class="obs">${obs.map(o=>`<li>${o}</li>`).join('')}</ul></section>
+  </div>
+  <section class="card mt"><h2>Season table</h2><div class="tbl"><table><thead><tr><th>Date</th><th>Race</th><th class="n">Place</th><th class="n">Behind</th><th class="n">Run 1</th><th class="n">Run 2</th><th class="n">Class</th><th class="n">Club</th><th class="n">To top 10</th><th class="n">To podium</th>${PRED()?'<th class="n">Predicted</th>':''}</tr></thead><tbody>
+  ${all.map(x=>{const {rc,r}=x;return `<tr><td>${dd(rc.date)}</td><td><a href="#races" data-race="${esc(rc.id)}">${esc(rc.venue)} ${rc.disc}</a><div class="sub">${esc(rc.division)}</div></td>
+    <td class="n">${r.finished?r.rank+'/'+rc.finishers:esc(r.status)}</td><td class="n">${r.finished?pct(r.gap):''}</td>
+    <td class="n">${r.r1_rank?ord(r.r1_rank)+' <span class="sub">'+pct(r.r1_gap)+'</span>':''}</td><td class="n">${r.r2_rank?ord(r.r2_rank)+' <span class="sub">'+pct(r.r2_gap)+'</span>':rc.total_only?'<span class="sub">totals only</span>':''}</td>
+    <td class="n">${r.class_rank?r.class_rank+'/'+r.class_n:''}</td><td class="n">${x.tmN?x.tmRank+'/'+x.tmN:''}</td>
+    <td class="n">${x.to10!=null?sec(x.to10):r.finished&&r.rank<=10?'<span class="pill up">top 10</span>':''}</td><td class="n">${x.toPod!=null?sec(x.toPod):r.finished&&r.rank<=3?'<span class="pill up">podium</span>':''}</td>${PRED()?`<td class="n">${(()=>{const p=predFor(x);return p&&p.gap!=null?pct(p.gap)+'<div>'+verdict(p,r)+'</div>':'<span class="sub">–</span>'})()}</td>`:''}</tr>`}).join('')}
+  </tbody></table></div><p class="note">Run ranks and gaps compare each run with the fastest time on that run. Class place counts finishers of ${FN()}'s own age class. Club = ${FN()}'s place among finishers from ${HER()} club in that race.</p></section>`;
+}
+function trend(fin){
+  if(fin.length<2)return '<p class="sub">Needs two finished races.</p>';
+  const W=560,H=210,L=40,R=20,T=12,B=28;const mx=Math.max(10,Math.ceil(Math.max(...fin.map(x=>x.r.gap))/5)*5);
+  const X=i=>L+(W-L-R)*i/(fin.length-1),Y=v=>T+(H-T-B)*v/mx;const ticks=[];for(let v=0;v<=mx;v+=5)ticks.push(v);
+  const t10=fin.map((x,i)=>x.rc.fin[9]?{i,v:x.rc.fin[9].gap}:null).filter(Boolean);
+  const path=a=>a.map((p,k)=>`${k?'L':'M'}${X(p.i).toFixed(1)},${Y(p.v).toFixed(1)}`).join('');
+  return `<div class="label">% behind the winner (higher on the chart is better)</div><svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="${FN()}'s percent behind the winner by race">
+  ${ticks.map(v=>`<line class="gridl" x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}"/><text x="${L-6}" y="${Y(v)+4}" text-anchor="end">${v}%</text>`).join('')}
+  <path d="${path(t10)}" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <path d="${path(fin.map((x,i)=>({i,v:x.r.gap})))}" fill="none" stroke="var(--red)" stroke-width="2.2"/>
+  ${fin.map((x,i)=>`<circle cx="${X(i)}" cy="${Y(x.r.gap)}" r="4.5" fill="${x.rc.disc==='SL'?'var(--panel)':'var(--red)'}" stroke="var(--red)" stroke-width="2"><title>${esc(x.rc.venue)} ${x.rc.disc} ${dd(x.rc.date)}: ${pct(x.r.gap)}, ${ord(x.r.rank)} of ${x.rc.finishers}</title></circle><text x="${X(i)}" y="${H-8}" text-anchor="middle">${dd(x.rc.date)}</text>`).join('')}
+  </svg><div class="legend"><span><span class="sw" style="background:var(--red)"></span>GS</span><span><span class="sw" style="border:2px solid var(--red);background:var(--panel)"></span>SL</span><span><span class="sw" style="background:var(--gold)"></span>10th place</span></div>`;
+}
+
+function vRaces(){
+  const all=myRaces().map(enrich);if(!all.length)return empty('No races yet.');
+  return `<section class="card red"><h2>Race by race</h2><p class="note">Each race against its field. Gold marks the 10th-place and podium targets.</p>
+  ${all.slice().reverse().map(x=>raceCard(x)).join('')}</section>`;
+}
+function raceCard(x){
+  const {rc,r}=x;const c=rc.course||{};const tm=rc.fin.filter(y=>y.club===r.club&&y.key!==ME());
+  return `<div class="racecard" id="rc-${esc(rc.id)}"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline"><h3>${dd(rc.date)} · ${esc(rc.venue)} ${discName(rc.disc)}</h3><span class="sub">${esc(rc.series)} · ${esc(rc.division)} · <a href="${esc(rc.source)}" target="_blank" rel="noopener">official results</a></span></div>
+  <div class="kv">
+    <div><b>${r.finished?ord(r.rank)+' of '+rc.finishers:esc(r.status)}</b><span>place (${rc.starters} starters)</span></div>
+    <div><b>${r.finished?pct(r.gap):'–'}</b><span>behind winner${r.finished?' · '+r.gap_s.toFixed(2)+' s':''}</span></div>
+    <div><b>${r.r1_rank?ord(r.r1_rank)+' · '+pct(r.r1_gap):rc.total_only?'totals only':(r.r1!=null?fmtT(r.r1):esc(r.s1||'–'))}</b><span>run 1</span></div>
+    <div><b>${r.r2_rank?ord(r.r2_rank)+' · '+pct(r.r2_gap):rc.total_only?'totals only':rc.runs===1?'one run':(r.r2!=null?fmtT(r.r2):esc(r.s2||'–'))}</b><span>run 2</span></div>
+    <div><b>${r.class_rank?r.class_rank+' of '+r.class_n:'–'}</b><span>${esc(r.cls||'')} place</span></div>
+    <div><b>${x.to10!=null?sec(x.to10):r.finished&&r.rank<=10?'in top 10':'–'}</b><span>to 10th place${x.to10p!=null?' · '+pct(x.to10p):''}</span></div>
+    <div><b>${x.toPod!=null?sec(x.toPod):r.finished&&r.rank<=3?'on podium':'–'}</b><span>to the podium</span></div>
+    <div><b>${c.vertical_m?c.vertical_m+' m':'–'}</b><span>vertical${c.course?' · '+esc(c.course):''}</span></div>
+    ${PRED()?`<div><b>${esc(ARCH(rc).name)}</b><span>hill type (${esc(ARCH(rc).basis)})</span></div>
+    <div><b>${(()=>{const p=predFor(x);return p&&p.gap!=null?pct(p.gap)+' '+verdict(p,r):'–'})()}</b><span>predicted beforehand${(()=>{const p=predFor(x);return p&&p.gap!=null?' · finish chance '+Math.round(100*p.finP)+'%':''})()}</span></div>`:''}
+  </div>
+  ${r.finished?gapStrip(rc,r):''}
+  <p class="note">${rc.conditions?'<b>Conditions (printed):</b> '+esc(rc.conditions)+'. ':'No conditions printed for this race. '}${tm.length?clubName(r.club)+' finishers: '+tm.map(y=>`${esc(y.name)} ${ord(y.rank)}`).join(', ')+'.':''}${r.gained!=null?` Run 1 → final among finishers: ${r.gained>0?'+':''}${r.gained} places.`:''}</p></div>`;
+}
+function gapStrip(rc,r){
+  const W=620,H=56,L=10,R=10;const mx=Math.max(5,Math.ceil(Math.max(...rc.fin.map(y=>y.gap))/5)*5);const X=v=>L+(W-L-R)*v/mx;
+  const t10=rc.fin[9],t3=rc.fin[2];
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:760px" role="img" aria-label="Every finisher's percent behind the winner, ${FN()} highlighted">
+  <line x1="${L}" x2="${W-R}" y1="26" y2="26" stroke="var(--line)"/>
+  ${rc.fin.map(y=>`<circle cx="${X(y.gap)}" cy="26" r="${y.key===ME()?7:3.5}" fill="${y.key===ME()?'var(--red)':y.club===r.club?'var(--redsoft)':'var(--field)'}" stroke="${y.key===ME()?'var(--ink)':y.club===r.club?'var(--red)':'none'}" stroke-width="${y.key===ME()?1.5:1}"><title>${y.rank}. ${esc(y.name)} (${esc(y.club)}) ${pct(y.gap)}</title></circle>`).join('')}
+  ${t3?`<line x1="${X(t3.gap)}" x2="${X(t3.gap)}" y1="10" y2="42" stroke="var(--gold)" stroke-width="2"/><text x="${X(t3.gap)}" y="9" text-anchor="middle" style="fill:var(--gold)">3rd</text>`:''}
+  ${t10?`<line x1="${X(t10.gap)}" x2="${X(t10.gap)}" y1="10" y2="42" stroke="var(--gold)" stroke-width="2" stroke-dasharray="3 2"/><text x="${X(t10.gap)}" y="9" text-anchor="middle" style="fill:var(--gold)">10th</text>`:''}
+  <text x="${X(r.gap)}" y="54" text-anchor="middle" style="fill:var(--red);font-weight:700">${FN()} ${ord(r.rank)}</text>
+  <text x="${L}" y="54">0%</text><text x="${W-R}" y="54" text-anchor="end">${mx}%</text></svg>`;
+}
+
+function rivalsData(){
+  const mine=myRaces().filter(x=>x.r.finished);const H={};
+  mine.forEach(({rc,r})=>rc.fin.forEach(y=>{if(y.key===ME())return;const h=H[y.key]=H[y.key]||{key:y.key,name:y.name,club:y.club,cls:y.cls,meet:0,ahead:0,gaps:[]};h.meet++;if(r.total<y.total)h.ahead++;h.gaps.push((y.total/r.total-1)*100);h.club=y.club;h.cls=y.cls}));
+  return Object.values(H).map(h=>({...h,med:median(h.gaps)}));
+}
+function vRivals(){
+  const R=rivalsData().filter(h=>h.meet>=3);if(!R.length)return empty('Needs at least three finished races against the same racer.');
+  const close=R.filter(h=>Math.abs(h.med)<=2.5).sort((a,b)=>Math.abs(a.med)-Math.abs(b.med));
+  const freq=[...R].sort((a,b)=>b.meet-a.meet||Math.abs(a.med)-Math.abs(b.med)).slice(0,24);
+  const ahead=R.filter(h=>h.med<-2.5&&h.med>=-8&&h.ahead<h.meet/2).sort((a,b)=>b.med-a.med).slice(0,8);
+  return `<section class="card red"><h2>Closest rivals</h2><p class="note">Racers ${FN()} met in at least three races (both finished) and who finish within ±2.5% of ${HER()} on median. Positive = the rival is slower.</p>
+    <div class="tbl"><table><thead><tr><th>Racer</th><th>Club</th><th>Class</th><th class="n">Races</th><th class="n">${FN()} first</th><th class="n">Median gap</th></tr></thead><tbody>
+    ${close.slice(0,12).map(h=>row(h)).join('')||'<tr><td colspan="6" class="sub">None within ±2.5% yet.</td></tr>'}</tbody></table></div></section>
+  <section class="card gold mt"><h2>Next step up</h2><p class="note">Racers who usually beat ${FN()} by 2.5% to 8% on median: the group to close on next, beyond ${HER()} closest rivals.</p>
+    <div class="tbl"><table><thead><tr><th>Racer</th><th>Club</th><th>Class</th><th class="n">Races</th><th class="n">${FN()} first</th><th class="n">Median gap</th></tr></thead><tbody>${ahead.map(h=>row(h)).join('')||'<tr><td colspan="6" class="sub">No one in that range yet.</td></tr>'}</tbody></table></div></section>
+  <section class="card mt"><h2>Head to head, most frequent opponents</h2><div class="tbl"><table><thead><tr><th>Racer</th><th>Club</th><th>Class</th><th class="n">Races</th><th class="n">${FN()} first</th><th class="n">Median gap</th></tr></thead><tbody>${freq.map(h=>row(h)).join('')}</tbody></table></div>
+  <p class="note">Gap = rival's time ÷ ${FN()}'s time − 1, per race, then the median. Only races where both finished count.</p></section>`;
+  function row(h){return `<tr class="${h.club===CLUB()?'tm':''}"><td>${esc(h.name)}</td><td>${esc(h.club)}</td><td>${esc(h.cls||'')}</td><td class="n">${h.meet}</td><td class="n">${h.ahead}–${h.meet-h.ahead}</td><td class="n"><span class="pill ${Math.abs(h.med)<0.05?'':h.med>0?'up':'down'}">${pct(h.med)}</span></td></tr>`}
+}
+
+function vU18(){
+  const oc=OC();if(!oc)return empty('No outlook class configured.');
+  const all=myRaces().filter(x=>x.r.finished);if(!all.length)return empty('No finished races yet.');
+  const rows=all.map(({rc,r})=>{const grp=rc.fin.filter(y=>y.cls===oc&&y.key!==ME());const pos=1+grp.filter(y=>y.total<r.total).length;const t10=grp[9];
+    return {rc,r,n:grp.length,pos,gapBest:grp[0]?(r.total/grp[0].total-1)*100:null,to10:t10&&pos>10?r.total-t10.total:null}}).filter(x=>x.n>0);
+  const med=median(rows.map(x=>x.pos/(x.n+1)));
+  return `<section class="card red"><h2>${esc(oc)} outlook</h2>
+  <p>${FN()} moves up to ${esc(oc)} next. In races ${SHE()} already skied, here is where ${HER()} time would have placed among the ${esc(oc)} finishers alone.</p>
+  <div class="stats"><div class="stat"><div class="v">${rows.length?'top '+Math.round(100*med)+'%':'–'}</div><div class="k">median position in the ${esc(oc)}-only field</div></div>
+  <div class="stat"><div class="v">${rows.length?pct(median(rows.map(x=>x.gapBest))):'–'}</div><div class="k">median behind the fastest ${esc(oc)}</div></div></div>
+  <div class="tbl"><table><thead><tr><th>Date</th><th>Race</th><th class="n">${FN()} overall</th><th class="n">Among ${esc(oc)}s</th><th class="n">Behind best ${esc(oc)}</th><th class="n">To ${esc(oc)} 10th</th></tr></thead><tbody>
+  ${rows.map(x=>`<tr><td>${dd(x.rc.date)}</td><td>${esc(x.rc.venue)} ${x.rc.disc}</td><td class="n">${x.r.rank}/${x.rc.finishers}</td><td class="n">${x.pos}/${x.n+1}</td><td class="n">${pct(x.gapBest)}</td><td class="n">${x.to10!=null?sec(x.to10):x.pos<=10?'<span class="pill up">top 10</span>':''}</td></tr>`).join('')}
+  </tbody></table></div><p class="note">Inserts ${FN()}'s time into the ${esc(oc)} finishers of the same race. It shows the gap to close, not a forecast: both groups change by next season.</p></section>`;
+}
+
+/* ---------- hill archetypes ---------- */
+function ARCH(rc){
+  const A=(S.config&&S.config.archetypes)||{};const v=(rc.course||{}).vertical_m;
+  const band=(A[rc.disc]||[]).find(b=>v!=null&&v>=b.min&&v<b.max);
+  if(band)return {code:band.code,name:band.name,basis:'race vertical '+v+' m'};
+  const vd=((S.config&&S.config.venue_archetypes)||{})[rc.venue+'|'+rc.disc];
+  if(vd&&vd.code){const b=(A[rc.disc]||[]).find(x=>x.code===vd.code);return {code:vd.code,name:b?b.name:vd.code,basis:'venue: '+vd.basis}}
+  return {code:rc.disc+'-?',name:(rc.disc==='SL'?'Slalom':'GS')+', type unknown',basis:'no vertical published'};
+}
+function archInfo(code){const A=(S.config&&S.config.archetypes)||{};return [...(A.SL||[]),...(A.GS||[])].find(b=>b.code===code)}
+
+/* ---------- predictions (walk-forward: only races before the date) ---------- */
+function allMine(){return S.races.map(rc=>({rc,r:rc.R.find(x=>x.key===ME())})).filter(x=>x.r&&x.r.started).sort((a,b)=>a.rc.date.localeCompare(b.rc.date))}
+function predict(venue,disc,code,date){
+  const prior=allMine().filter(x=>x.rc.date<date&&x.rc.disc===disc);if(!prior.length)return null;
+  const days=d=>(new Date(date)-new Date(d))/864e5;const HL=(S.config&&S.config.model_half_life_days)||120;const w=x=>Math.pow(0.5,days(x.rc.date)/HL);
+  const fin=prior.filter(x=>x.r.finished);
+  const wm=(arr,f)=>{const s=arr.reduce((a,x)=>a+w(x),0);return s?arr.reduce((a,x)=>a+w(x)*f(x),0)/s:null};
+  const parts=[];const dm=wm(fin,x=>x.r.gap);if(dm!=null)parts.push({k:'discipline',v:dm,n:fin.length});
+  const af=fin.filter(x=>ARCH(x.rc).code===code&&!code.endsWith('?'));const am=wm(af,x=>x.r.gap);if(am!=null)parts.push({k:'hill type',v:am,n:af.length});
+  const vf=fin.filter(x=>x.rc.venue===venue);const vm=wm(vf,x=>x.r.gap);if(vm!=null)parts.push({k:'venue',v:vm,n:vf.length});
+  const pf=wm(fin,x=>x.r.rank/x.rc.finishers);const pa=wm(af,x=>x.r.rank/x.rc.finishers);
+  const ast=prior.filter(x=>ARCH(x.rc).code===code);const finP=((ast.length?ast:prior).filter(x=>x.r.finished).length+1)/((ast.length?ast:prior).length+2);
+  if(!parts.length)return {gap:null,finP,basis:'no finished race yet',n:prior.length};
+  const gap=parts.reduce((a,p)=>a+p.v,0)/parts.length;
+  return {gap,lo:Math.max(0,gap-2),hi:gap+2,pctl:pa!=null?(pf+pa)/2:pf,finP,basis:parts.map(p=>p.k+' ('+p.n+')').join(' + '),n:prior.length};
+}
+function predFor(x){return predict(x.rc.venue,x.rc.disc,ARCH(x.rc).code,x.rc.date)}
+function verdict(p,r){
+  if(!p||p.gap==null)return '';
+  if(!r.finished)return `<span class="pill down">did not finish</span>`;
+  if(r.gap<p.lo)return `<span class="pill up">better</span>`;if(r.gap>p.hi)return `<span class="pill down">worse</span>`;return `<span class="pill">as predicted</span>`;
+}
+
+function vHills(){
+  const all=allMine();if(!all.length)return empty('No races yet.');
+  const A=(S.config&&S.config.archetypes)||{};const codes=[...(A.SL||[]),...(A.GS||[])].map(b=>b.code);
+  const seasons=[...new Set(all.map(x=>x.rc.season))].sort();
+  const groups={};all.forEach(x=>{const a=ARCH(x.rc);(groups[a.code]=groups[a.code]||{a,xs:[]}).xs.push(x)});
+  const order=[...codes,...Object.keys(groups).filter(c=>!codes.includes(c))].filter(c=>groups[c]);
+  const cell=xs=>{const f=xs.filter(x=>x.r.finished);return xs.length?`${f.length}/${xs.length}<div class="sub">${f.length?pct(median(f.map(x=>x.r.gap))):'–'}</div>`:'<span class="sub">–</span>'};
+  const rows=order.map(c=>{const g=groups[c];const f=g.xs.filter(x=>x.r.finished);const info=archInfo(c);
+    return {c,g,f,info,fr:f.length/g.xs.length,med:f.length?median(f.map(x=>x.r.gap)):null,pctl:f.length?median(f.map(x=>x.r.rank/x.rc.finishers)):null}});
+  const best=['SL','GS'].map(d=>{const rr=rows.filter(x=>x.g.xs[0].rc.disc===d&&x.med!=null&&!x.c.endsWith('?')).sort((a,b)=>a.med-b.med);return {d,b:rr[0],w:rr[rr.length-1]}});
+  return `<section class="card red"><h2>Performance by hill type</h2>
+  <p class="note">Each race is typed from its course: the same method as the Williams hill-type work (vertical drop sets the type), with bands scaled to youth courses. Where a race's own vertical drop is not published, the venue's documented figure is used and marked. Small samples: read these as hypotheses, and remember ${FN()} also improved over time, which favors hill types raced later in the season.</p>
+  <div class="tbl"><table><thead><tr><th>Hill type</th><th class="n">Starts</th><th class="n">Finish rate</th><th class="n">Median behind</th><th class="n">Median place</th>${seasons.map(se=>`<th class="n">${esc(se)}<div class="sub">finished · median</div></th>`).join('')}<th>Best result</th></tr></thead><tbody>
+  ${rows.map(x=>{const b=x.f.length?x.f.reduce((p,y)=>y.r.gap<p.r.gap?y:p):null;return `<tr><td><b>${esc(x.g.a.name)}</b><div class="sub">${esc(x.info?x.info.def:'vertical drop not published')}</div></td><td class="n">${x.g.xs.length}</td><td class="n">${Math.round(100*x.fr)}%</td><td class="n">${pct(x.med)}</td><td class="n">${x.pctl!=null?'top '+Math.round(100*x.pctl)+'%':'–'}</td>${seasons.map(se=>`<td class="n">${cell(x.g.xs.filter(y=>y.rc.season===se))}</td>`).join('')}<td>${b?esc(b.rc.venue)+'<div class="sub">'+DY(b.rc.date)+' · '+ord(b.r.rank)+'/'+b.rc.finishers+'</div>':''}</td></tr>`}).join('')}
+  </tbody></table></div>
+  <ul class="obs">${best.filter(x=>x.b).map(x=>x.b===x.w?`<li><b>${x.d}</b>: only one hill type with finishes so far (${esc(x.b.g.a.name)}, ${pct(x.b.med)}).</li>`:`<li><b>${x.d}</b>: best on <b>${esc(x.b.g.a.name)}</b> (median ${pct(x.b.med)}, ${PL(x.b.f.length,'finish')}, ${Math.round(100*x.b.fr)}% finish rate); weakest on <b>${esc(x.w.g.a.name)}</b> (${pct(x.w.med)}, ${PL(x.w.f.length,'finish')}, ${Math.round(100*x.w.fr)}% finish rate).</li>`).join('')}</ul>
+  ${hillDots(all)}</section>
+  <section class="card mt"><h3>Every race and its hill type</h3><div class="tbl"><table><thead><tr><th>Date</th><th>Race</th><th>Hill type</th><th>Basis</th><th class="n">Result</th><th class="n">Behind</th></tr></thead><tbody>
+  ${all.map(x=>{const a=ARCH(x.rc);return `<tr><td>${DY(x.rc.date)}</td><td>${esc(x.rc.venue)} ${x.rc.disc}</td><td>${esc(a.name)}</td><td class="sub">${esc(a.basis)}</td><td class="n">${x.r.finished?x.r.rank+'/'+x.rc.finishers:esc(x.r.status)}</td><td class="n">${x.r.finished?pct(x.r.gap):''}</td></tr>`}).join('')}
+  </tbody></table></div></section>`;
+}
+function hillDots(all){
+  const fin=all.filter(x=>x.r.finished);if(!fin.length)return '';
+  const A=(S.config&&S.config.archetypes)||{};const cats=[...(A.SL||[]),...(A.GS||[])].map(b=>b.code).concat(['SL-?','GS-?']).filter(c=>fin.some(x=>ARCH(x.rc).code===c));
+  const W=620,rowH=34,L=150,R=20,T=10;const H=T+cats.length*rowH+24;const mx=Math.max(10,Math.ceil(Math.max(...fin.map(x=>x.r.gap))/5)*5);const X=v=>L+(W-L-R)*v/mx;
+  const seasons=[...new Set(all.map(x=>x.rc.season))].sort();
+  return `<div class="label" style="margin-top:14px">% behind the winner by hill type (left is better)</div><svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:780px" role="img" aria-label="Percent behind the winner by hill type">
+  ${[0,5,10,15,20,25,30].filter(v=>v<=mx).map(v=>`<line class="gridl" x1="${X(v)}" x2="${X(v)}" y1="${T}" y2="${H-20}"/><text x="${X(v)}" y="${H-6}" text-anchor="middle">${v}%</text>`).join('')}
+  ${cats.map((c,i)=>{const y=T+i*rowH+rowH/2;const xs=fin.filter(x=>ARCH(x.rc).code===c);const nm=(archInfo(c)||{}).name||(xs[0]?ARCH(xs[0].rc).name:c);
+    return `<text x="${L-8}" y="${y+4}" text-anchor="end">${esc(nm)}</text>${xs.map(x=>`<circle cx="${X(x.r.gap)}" cy="${y}" r="6" fill="${x.rc.season===seasons[seasons.length-1]?'var(--red)':'var(--panel)'}" stroke="var(--red)" stroke-width="2"><title>${esc(x.rc.venue)} ${DY(x.rc.date)}: ${pct(x.r.gap)}</title></circle>`).join('')}`}).join('')}
+  </svg><div class="legend"><span><span class="sw" style="background:var(--red)"></span>${esc(seasons[seasons.length-1])}</span>${seasons.length>1?`<span><span class="sw" style="border:2px solid var(--red);background:var(--panel)"></span>earlier seasons</span>`:''}</div>`;
+}
+
+function vRanking(){
+  const cal=(S.config&&S.config.calendar)||[];if(!cal.length)return empty('No upcoming calendar configured.');
+  const asof=(S.config&&S.config.calendar_asof)||new Date().toISOString().slice(0,10);
+  const rows=cal.map(c=>{const a=ARCH({venue:c.venue,disc:c.disc,course:c.vertical_m?{vertical_m:c.vertical_m}:{}});const p=predict(c.venue,c.disc,a.code,asof);return {...c,a,p}}).filter(x=>x.p&&x.p.gap!=null);
+  rows.sort((x,y)=>x.p.gap-y.p.gap);
+  return `<section class="card gold"><h2>Venues ranked: best to worst</h2>
+  <p class="note">${esc((S.config&&S.config.calendar_note)||'')} Each race is predicted from ${FN()}'s own results only: ${HER()} recent average in the discipline, on that hill type, and at that venue (equal weight among those that exist; recent races count more, their weight halving every ${(S.config&&S.config.model_half_life_days)||120} days). Finish chance = ${HER()} finish rate on that hill type, smoothed. Lower predicted gap = better.</p>
+  <div class="tbl"><table><thead><tr><th class="n">#</th><th>Race</th><th>Hill type</th><th class="n">Predicted behind</th><th class="n">Likely place</th><th class="n">Finish chance</th><th>Based on</th></tr></thead><tbody>
+  ${rows.map((x,i)=>`<tr><td class="n">${i+1}</td><td><b>${esc(x.venue)} ${x.disc==='SL'?'slalom':'GS'}</b><div class="sub">${esc([x.event,x.when].filter(Boolean).join(' · '))}</div></td><td>${esc(x.a.name)}</td><td class="n">${pct(x.p.gap)}<div class="sub">${x.p.lo.toFixed(1)} to ${x.p.hi.toFixed(1)}</div></td><td class="n">${x.p.pctl!=null?'top '+Math.round(100*x.p.pctl)+'%':'–'}</td><td class="n">${Math.round(100*x.p.finP)}%</td><td class="sub">${esc(x.p.basis)}</td></tr>`).join('')}
+  </tbody></table></div>
+  <p class="note">Field position comes from fields of ${HER()} own past races; ${OC()?`as a first-year ${esc(OC())} the fields get stronger, so read it as an upper bound.`:''} Predictions update automatically as new results come in, and every race report shows how the prediction made before that race compared with the result.</p></section>
+  ${backtest()}`;
+}
+function backtest(){
+  const xs=allMine().map(x=>({...x,p:predFor(x)})).filter(x=>x.p&&x.p.gap!=null);if(!xs.length)return '';
+  const fin=xs.filter(x=>x.r.finished);const hit=fin.filter(x=>x.r.gap>=x.p.lo&&x.r.gap<=x.p.hi).length;const mae=fin.length?avg(fin.map(x=>Math.abs(x.r.gap-x.p.gap))):null;
+  return `<section class="card mt"><h3>How the predictions did on past races</h3><p class="note">Each prediction uses only races before that date. ${fin.length?`Within ±2 points in ${hit} of ${fin.length} finished races; average miss ${mae.toFixed(1)} points. ${SHE(1)} beat the prediction in ${fin.filter(x=>x.r.gap<x.p.lo).length} of ${fin.length}: the model averages ${HER()} past results, and ${SHE()} improved steadily over the two seasons, so it runs pessimistic. Read the ranking order as more reliable than the exact percentages.`:''}</p>
+  <div class="tbl"><table><thead><tr><th>Date</th><th>Race</th><th class="n">Predicted</th><th class="n">Actual</th><th>Verdict</th><th>Based on</th></tr></thead><tbody>
+  ${xs.map(x=>`<tr><td>${DY(x.rc.date)}</td><td>${esc(x.rc.venue)} ${x.rc.disc}</td><td class="n">${pct(x.p.gap)}</td><td class="n">${x.r.finished?pct(x.r.gap):esc(x.r.status)}</td><td>${verdict(x.p,x.r)}</td><td class="sub">${esc(x.p.basis)}</td></tr>`).join('')}
+  </tbody></table></div></section>`;
+}
+function vMethod(){
+  return `<section class="card"><h2>How the numbers work</h2><ul class="obs">
+  <li><b>% behind the winner</b>: (${FN()}'s time ÷ winner's time − 1) × 100, total and per run.</li>
+  <li><b>To top 10 / podium</b>: seconds and % ${FN()} would have needed to match the 10th-place and 3rd-place totals.</li>
+  <li><b>Class place</b>: rank among finishers of ${HER()} own age class.</li>
+  <li><b>Rivals</b>: every racer ${SHE()} met in at least three races where both finished; record and median % gap.</li>
+  ${OC()?`<li><b>${esc(OC())} outlook</b>: ${HER()} time placed among the ${esc(OC())} finishers of the same race.</li>`:''}
+  ${HIDE().includes('hills')?'':`  <li><b>Hill type</b>: each race is typed by its course's vertical drop (the Williams hill-type method), with bands scaled to youth courses: ${((S.config&&S.config.archetypes&&S.config.archetypes.SL)||[]).concat((S.config&&S.config.archetypes&&S.config.archetypes.GS)||[]).map(b=>esc(b.name)+' '+esc(b.def)).join('; ')}. When a race's own vertical drop is not published, the venue's documented figure is used and marked as such; venues with conflicting published figures stay untyped.</li>
+  <li><b>Prediction</b>: for each race, only ${FN()}'s earlier results in that discipline are used. It is the average of up to three weighted means (all ${HER()} races in the discipline, those on the same hill type, those at the same venue), recent races counting more (weight halves every ${(S.config&&S.config.model_half_life_days)||120} days). Band ±2 points. Finish chance = (finishes + 1) ÷ (starts + 2) on that hill type. Verdict: better, as predicted, worse, or did not finish.</li>
+  <li><b>Venue ranking</b>: the same prediction applied to next season's races. The 2026-27 NYSSRA schedule is not published yet, so the list follows the 2024-25 and 2025-26 rotation.</li>`}
+  <li>Run-to-run changes are explained only when printed conditions document them.</li></ul>
+  <p class="note">Data: ${esc((S.config&&S.config.data_note)||"")} ${seasonRaces().length} races stored in this view, ${myRaces().length} with ${FN()}. A weekly update adds new races each Monday from January 2027.</p></section>`;
+}
+function empty(t){return `<div class="empty">${esc(t)}</div>`}
+
+const ROUTES={season:vSeason,races:vRaces,rivals:vRivals,hills:vHills,ranking:vRanking,u18:vU18,method:vMethod};
+function route(){const h=(location.hash||'#season').slice(1);return ROUTES[h]&&!HIDE().includes(h)?h:'season'}
+function render(){
+  const r=route();document.querySelectorAll('nav.tabs a').forEach(a=>a.setAttribute('aria-current',a.getAttribute('href')==='#'+r?'page':'false'));
+  if(!S.loaded)return;if(!S.races.length){$('#view').innerHTML=empty('No races stored yet.');return}
+  $('#view').innerHTML=ROUTES[r]();
+  if(S.jump){const el=document.getElementById('rc-'+S.jump);S.jump=null;if(el)el.scrollIntoView({block:'start'})}
+}
+document.addEventListener('click',e=>{const a=e.target.closest('a[data-race]');if(a){S.jump=a.dataset.race}});
+document.addEventListener('change',e=>{if(e.target.id==='season'){S.season=e.target.value;render()}});
+window.addEventListener('hashchange',render);
+
+(async function(){
+  render();const status=$('#status');
+  const get=f=>fetch('data/'+f+'?v='+Date.now()).then(r=>{if(!r.ok)throw new Error(f);return r.json()});
+  let cfg,docs;try{[cfg,docs]=await Promise.all([get('config.json'),get('races.json')])}catch(e){status.textContent='The race data could not be loaded.';$('#view').innerHTML=empty('The race data could not be loaded.');return}
+  S.config=cfg||{};if(S.config.athlete){$('#aname').textContent=S.config.athlete.name;document.title=S.config.athlete.name+' · Race Analysis';$('#kicker').textContent=S.config.athlete.kicker||$('#kicker').textContent}
+  document.querySelectorAll('nav.tabs a').forEach(a=>{a.hidden=HIDE().includes(a.getAttribute('href').slice(1))});const ot=$('#outlookTab');if(ot){ot.hidden=!OC()||HIDE().includes('u18');ot.textContent=(OC()||'')+' outlook'}
+  S.races=docs.map(computeRace);
+  const ss=[...new Set(S.races.map(r=>r.season))].sort();S.season=ss[ss.length-1]||null;
+  $('#season').innerHTML=ss.map(x=>`<option ${x===S.season?'selected':''}>${esc(x)}</option>`).join('')+(ss.length>1?`<option value="all">All seasons</option>`:'');
+  S.loaded=true;const n=myRaces().length;const last=myRaces().map(x=>x.rc.date).pop();
+  status.textContent=`${n} races with ${FN()}${last?' · latest '+dd(last)+' '+last.slice(0,4):''}`;render();
+})();
+})();
+</script>
+</body></html>
